@@ -1,7 +1,7 @@
 package cn.mayun.redis;
 
 import java.io.File;
-import java.util.HashMap;
+
 
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.RollingFileAppender;
+
 
 public class LogDemo {
 
@@ -67,4 +68,5 @@ public class LogDemo {
     {
         getLoggerByName(file).info(msg);
     }
+
 }
