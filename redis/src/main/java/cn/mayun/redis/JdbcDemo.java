@@ -6,6 +6,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import java.sql.ResultSetMetaData;
+
 public class JdbcDemo
 {
     public void test() throws Exception
@@ -28,8 +30,21 @@ public class JdbcDemo
         while(res.next())
         {
             System.out.println(res.getString(4));
-            
         }
+
+        sta = con.createStatement();
+        String sql = "select * from orders";
+        res = sta.executeQuery(sql);
+        ResultSetMetaData struct = res.getMetaData();
+        StringBuilder builder = new StringBuilder();
+        for(int i=0;i<struct.getColumnCount();i++)
+        {
+         builder.append(struct.getColumnLabel(i+1)).append(" ");     
+        }
+        System.out.println(builder.toString());
+        res.close();       
+        sta.close();
+        con.close();
     }
 
     public int test2(int[] array)
@@ -57,14 +72,35 @@ public class JdbcDemo
            }
            if(array[begin]==array[mid])
            {
-               while((mid<array.length) && (array[begin]==array[mid]))
-               {
-                   mid++;
-               }
-               
+                       
            }
            mid = (begin+end)/2;
        }
         return array[end];
+    }
+
+
+    public void test3()
+    {
+        int i = 0;
+        while(i<100000)
+        {
+            if(i==99999)
+            {
+                i = 0;
+            }
+            i++;
+        }
+    }
+
+    public int getbit(int n)
+    {
+         int count=0;
+        while(n!=0)
+        {
+            n=n&n-1;
+            count++;
+        }
+        return count;
     }
 }

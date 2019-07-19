@@ -8,7 +8,9 @@ import javax.swing.plaf.synth.SynthOptionPaneUI;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Protocol;
+import redis.clients.jedis.Response;
 
 public class RedisDemo {
 
@@ -18,9 +20,15 @@ public class RedisDemo {
         System.out.println(dir);
     }
     public void test() {
-        //JedisPool conns = new JedisPool(new JedisPoolConfig(), "127.0.0.1", 6379, Protocol.DEFAULT_TIMEOUT, null);
-        //Jedis conn = null;
-        //conn = conns.getResource();
+        JedisPool conns = new JedisPool(new JedisPoolConfig(), "127.0.0.1", 6379, Protocol.DEFAULT_TIMEOUT, null);
+        Jedis conn = null;
+        conn = conns.getResource();
+
+        Pipeline p = conn.pipelined();
+        p.sadd("searched#","pairs");
+        Response<Boolean> exist = p.sismember("searched#", "ppairs");
+        p.sync();
+        System.out.println(exist.get());        
         //key
         /*System.out.println("key is exist:"+conn.exists("name"));
         conn.set("name", "zhumajie");
@@ -82,4 +90,55 @@ public class RedisDemo {
         conns.destroy();
         */
     }
+
+    public void test3()
+    {
+        Jedis redis = new Jedis("127.0.0.1",6379);
+        Map<String,String> data = new HashMap<String,String>();
+        redis.select(1);
+        redis.flushDB();
+        long start = System.currentTimeMillis();
+        for(int i=0;i<10000;i++)
+        {
+            data.clear();
+            data.put("k_"+i, "v"+i);
+            redis.hmset("key_", data);
+
+        }
+        long end = System.currentTimeMillis();
+        System.out.println("dbsize:["+redis.dbSize()+"]..");
+        System.out.println("hmset without pipeline use:["+(end-start)/1000+"]");
+
+        redis.flushDB();
+        Pipeline p = redis.pipelined();
+        start = System.currentTimeMillis();
+        for(int i=0;i<10000;i++)
+        {
+            data.clear();
+            data.put("k_"+i, "v_"+i);
+            p.hmset("key_", data);
+        }
+        p.sync();
+        end = System.currentTimeMillis();
+        System.out.println((end-start)/1000);
+        redis.flushDB();
+        
+    }
+
+    public void reOrderArray(int [] array) {
+        for(int i = 0;i<array.length-1;++i)
+        {
+            for(int j = i;j<array.length-1;j++)
+            {
+                if(array[j]%2==0&&array[j+1]%2==1)
+                {
+                    int temp = array[j];
+                    array[j] = array[j+1];
+                    array[j+1] = temp;
+                }
+            }
+        }
+    }
+
+
 }

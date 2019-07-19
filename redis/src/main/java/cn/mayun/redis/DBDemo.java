@@ -49,4 +49,9 @@ public class DBDemo {
             }
         }
     }
+
+    public static String getHolonomicSql()
+    {
+        return null;
+    }
 }
